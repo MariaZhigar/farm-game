@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#8fd0ef" />
+    <meta name="description" content="Небольшая браузерная ферма: сажайте траву, кормите кур и продавайте яйца." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Весёлая ферма</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header id="top">
+        <div class="identity">
+          <div>
+            <div id="level-kicker" class="kicker">Уровень 1 из 3</div>
+            <h1 id="level-title">Первые яйца</h1>
+          </div>
+          <div class="identity-actions">
+            <div id="coins" class="coins" data-coins="0">0</div>
+            <button type="button" id="reset" class="ghost">Заново</button>
+          </div>
+        </div>
+        <div class="goal">
+          <div id="goal-text" data-progress="0" data-target="0">Цель</div>
+          <div class="bar" aria-hidden="true"><div id="goal-bar"></div></div>
+          <p id="hint" class="hint"></p>
+        </div>
+      </header>
+
+      <main id="stage">
+        <canvas id="game" aria-label="Поле фермы. Нажмите на грядку, чтобы посадить траву, на яйцо — чтобы собрать, на колодец — чтобы набрать воду."></canvas>
+        <div id="toast" role="status"></div>
+      </main>
+
+      <footer id="bottom">
+        <div class="water">
+          <div class="meter">
+            <span>Ведро</span>
+            <div class="bar"><div id="bucket-bar"></div></div>
+            <b id="bucket-label">0/0</b>
+          </div>
+          <button type="button" id="scoop" class="scoop">
+            <span>Набрать воду</span>
+            <span class="scoop-meta">
+              <span class="mini-bar"><span id="well-bar"></span></span>
+              <span id="well-label">0/0</span>
+            </span>
+          </button>
+        </div>
+        <div class="dock">
+          <div id="warehouse" class="warehouse" data-count="0" data-capacity="0"></div>
+          <div class="actions">
+            <button type="button" id="sell" class="primary">Продать</button>
+            <button type="button" id="shop-open" class="primary alt">Магазин</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <div id="shop" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="shop-title">
+      <div class="panel">
+        <div class="panel-head">
+          <h2 id="shop-title">Магазин</h2>
+          <button type="button" id="shop-close" class="ghost">Закрыть</button>
+        </div>
+        <p id="shop-note" class="hint"></p>
+        <div id="shop-list"></div>
+      </div>
+    </div>
+
+    <div id="complete" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="complete-title">
+      <div class="panel victory">
+        <h2 id="complete-title">Уровень пройден!</h2>
+        <p id="complete-text"></p>
+        <button type="button" id="complete-next" class="primary">Следующий уровень</button>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
