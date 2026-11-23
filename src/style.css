@@ -20,6 +20,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
+  max-width: 100%;
   background: linear-gradient(#9fd8f3, #d7f3c2);
 }
 
@@ -50,6 +51,8 @@ button:disabled { opacity: 0.55; cursor: default; }
 
 #app {
   height: 100dvh;
+  max-width: 100%;
+  overflow: hidden;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 8px;
@@ -63,6 +66,8 @@ button:disabled { opacity: 0.55; cursor: default; }
   border: 3px solid var(--line);
   border-radius: 16px;
   padding: 8px 10px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .identity {
@@ -104,18 +109,51 @@ h1 {
   font-weight: 800;
 }
 
-.coins::before {
-  content: "";
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffe38a, var(--gold) 60%, #c48410);
-  border: 2px solid #a56a10;
+.coin-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+  object-fit: contain;
+  flex: 0 0 auto;
 }
 
-.goal { margin-top: 6px; }
+.coins picture,
+#goal-coin,
+#toast picture,
+#shop-note picture,
+.price picture,
+.complete-coins picture {
+  display: inline-flex;
+  line-height: 0;
+  flex: 0 0 auto;
+}
 
-#goal-text { font-weight: 800; font-size: 15px; }
+#shop-note {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+#shop-note .coin-icon { width: 16px; height: 16px; }
+
+#goal-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+#goal-label {
+  min-width: 0;
+}
+
+#goal-coin .coin-icon { width: 18px; height: 18px; }
+#goal-coin[hidden] { display: none; }
+
+.goal { margin-top: 6px; }
 
 .hint {
   margin-top: 4px;
@@ -178,7 +216,12 @@ canvas {
   transition: opacity 0.2s linear;
   max-width: 92%;
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
+
+#toast .coin-icon { width: 18px; height: 18px; }
 
 #toast.show { opacity: 1; }
 
@@ -332,7 +375,23 @@ canvas {
 .offer-copy { flex: 1; min-width: 0; }
 .offer-copy h3 { font-size: 16px; }
 .offer-copy p { color: var(--muted); font-size: 13px; margin-top: 2px; }
-.offer button { min-width: 112px; }
+.offer button {
+  min-width: 112px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.offer button .coin-icon,
+.complete-coins .coin-icon { width: 18px; height: 18px; }
+
+.complete-coins {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 800;
+}
 
 .victory { text-align: center; }
 .victory p { margin: 10px 0 16px; line-height: 1.4; }

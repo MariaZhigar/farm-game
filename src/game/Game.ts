@@ -23,6 +23,7 @@ export interface HudModel {
   title: string;
   hint: string;
   goalText: string;
+  goalKind: 'collect' | 'earn';
   progress: number;
   target: number;
   coins: number;
@@ -37,6 +38,7 @@ export interface HudModel {
   lastLevel: boolean;
   message: string;
   messageOn: boolean;
+  messageCoin: boolean;
   animalCount: number;
   maxAnimals: number;
 }
@@ -85,6 +87,7 @@ export class Game {
   completed = false;
   message = '';
   messageT = 0;
+  messageCoin = false;
   truck = 0;
   scoopFlash = 0;
   cssW = 320;
@@ -207,9 +210,13 @@ export class Game {
       text: `+${sum}`,
       life: 1.25,
       max: 1.25,
+      coin: true,
     });
     const done = this.checkGoal();
-    this.toast(done ? `Цель выполнена. +${sum} ${coinsWord(sum)}` : `+${sum} ${coinsWord(sum)}`);
+    this.toast(
+      done ? `Цель выполнена. +${sum} ${coinsWord(sum)}` : `+${sum} ${coinsWord(sum)}`,
+      true,
+    );
     this.save();
   }
 
@@ -222,7 +229,7 @@ export class Game {
       return;
     }
     if (this.coins < offer.price) {
-      this.toast('Не хватает монет');
+      this.toast('Не хватает монет', true);
       return;
     }
     this.coins -= offer.price;
@@ -250,9 +257,10 @@ export class Game {
     this.toast('Новая игра');
   }
 
-  toast(text: string): void {
-    if (text === this.message && this.messageT > 1.5) return;
+  toast(text: string, coin = false): void {
+    if (text === this.message && this.messageT > 1.5 && coin === this.messageCoin) return;
     this.message = text;
+    this.messageCoin = coin;
     this.messageT = 2.3;
   }
 
@@ -271,6 +279,7 @@ export class Game {
       title: this.level.title,
       hint: this.level.hint,
       goalText: goal.text,
+      goalKind: goal.kind,
       progress: Math.min(this.goalProgress, goalTarget(goal)),
       target: goalTarget(goal),
       coins: Math.floor(this.coins),
@@ -285,6 +294,7 @@ export class Game {
       lastLevel: this.levelIndex >= LEVELS.length - 1,
       message: this.message,
       messageOn: this.messageT > 0,
+      messageCoin: this.messageCoin,
       animalCount: this.animals.length,
       maxAnimals: this.level.maxAnimals,
     };
@@ -375,6 +385,7 @@ export class Game {
       const bonus = Math.floor(this.coins - before);
       this.toast(
         bonus > 0 ? `Цель выполнена. Склад продан: +${bonus} ${coinsWord(bonus)}` : 'Цель выполнена',
+        bonus > 0,
       );
     }
     this.save();

@@ -20,12 +20,24 @@
             <h1 id="level-title">Первые яйца</h1>
           </div>
           <div class="identity-actions">
-            <div id="coins" class="coins" data-coins="0">0</div>
+            <div id="coins" class="coins" data-coins="0">
+              <picture>
+                <source type="image/webp" srcset="./assets/coin-128.webp 1x, ./assets/coin.webp 2x" />
+                <img class="coin-icon" src="./assets/coin-128.png" srcset="./assets/coin-128.png 1x, ./assets/coin.png 2x" alt="" width="22" height="22" />
+              </picture>
+              <span id="coins-value">0</span>
+            </div>
             <button type="button" id="reset" class="ghost">Заново</button>
           </div>
         </div>
         <div class="goal">
-          <div id="goal-text" data-progress="0" data-target="0">Цель</div>
+          <div id="goal-text" data-progress="0" data-target="0">
+            <picture id="goal-coin" hidden>
+              <source type="image/webp" srcset="./assets/coin-128.webp 1x, ./assets/coin.webp 2x" />
+              <img class="coin-icon" src="./assets/coin-128.png" srcset="./assets/coin-128.png 1x, ./assets/coin.png 2x" alt="" width="18" height="18" />
+            </picture>
+            <span id="goal-label">Цель</span>
+          </div>
           <div class="bar" aria-hidden="true"><div id="goal-bar"></div></div>
           <p id="hint" class="hint"></p>
         </div>
