@@ -74,7 +74,9 @@ prices: { egg: 10, milk: 25 },
 
 ## Публикация на GitHub Pages
 
-В репозитории есть workflow `.github/workflows/pages.yml`. Он запускается при пуше в `main`, собирает проект и выкладывает `dist/`. Один раз нужно включить источник Pages вручную:
+В репозитории есть workflow `.github/workflows/pages.yml`. Он запускается при пуше в `main`, собирает проект и выкладывает `dist/`. Шаг **Setup Pages** включает сайт сам (`enablement: true`), если Pages ещё не создан.
+
+Если запуск всё равно падает с «Get Pages site failed», включите источник вручную:
 
 1. Откройте репозиторий на GitHub.
 2. Вкладка **Settings**.
@@ -82,7 +84,7 @@ prices: { egg: 10, milk: 25 },
 4. В блоке **Build and deployment** откройте список **Source**.
 5. Выберите **GitHub Actions** (не «Deploy from a branch»).
 
-После слияния в `main` откройте вкладку **Actions** и дождитесь зелёного **Deploy to GitHub Pages**. Ссылка на игру появится в блоке **deploy** этого запуска и на странице Settings → Pages:
+После этого откройте вкладку **Actions**, провалившийся запуск **Deploy to GitHub Pages** и нажмите **Re-run all jobs**. Ссылка на игру появится в блоке **deploy** и на странице Settings → Pages:
 
 `https://mariazhigar.github.io/farm-game/`
 
