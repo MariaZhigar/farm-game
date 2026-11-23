@@ -60,6 +60,8 @@ export interface Floater {
   text: string;
   life: number;
   max: number;
+  /** Рисует монету рядом с текстом — всплывающий доход от продажи. */
+  coin?: boolean;
 }
 
 export function goalTarget(goal: Goal): number {

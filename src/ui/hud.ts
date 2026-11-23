@@ -2,6 +2,15 @@ import type { Game, HudModel } from '../game/Game';
 import type { AnimalId, ProductId } from '../game/types';
 import { PRODUCTS } from '../game/config/products';
 
+const base = import.meta.env.BASE_URL;
+
+function coinMarkup(size: number): string {
+  const webp = `${base}assets/coin-128.webp 1x, ${base}assets/coin.webp 2x`;
+  const png1 = `${base}assets/coin-128.png`;
+  const png2 = `${base}assets/coin.png`;
+  return `<picture><source type="image/webp" srcset="${webp}" /><img class="coin-icon" src="${png1}" srcset="${png1} 1x, ${png2} 2x" alt="" width="${size}" height="${size}" /></picture>`;
+}
+
 const ICONS: Record<AnimalId, string> = {
   chicken: `
     <svg viewBox="0 0 64 64" aria-hidden="true">
@@ -25,6 +34,8 @@ const ICONS: Record<AnimalId, string> = {
 export class Hud {
   private warehouseHtml = '';
   private shopHtml = '';
+  private shopNoteHtml = '';
+  private toastHtml = '';
   private completeKey = '';
   private resetArmedAt = 0;
 
@@ -58,12 +69,13 @@ export class Hud {
     this.byId('level-title').textContent = view.title;
     this.byId('hint').textContent = view.hint;
     const goal = this.byId('goal-text');
-    goal.textContent = `${view.goalText}: ${view.progress}/${view.target}`;
+    this.byId('goal-label').textContent = `${view.goalText}: ${view.progress}/${view.target}`;
+    this.byId('goal-coin').hidden = view.goalKind !== 'earn';
     goal.dataset.progress = String(view.progress);
     goal.dataset.target = String(view.target);
     this.byId('goal-bar').style.width = `${view.target ? Math.min(100, (view.progress / view.target) * 100) : 0}%`;
     const coins = this.byId('coins');
-    coins.textContent = String(view.coins);
+    this.byId('coins-value').textContent = String(view.coins);
     coins.dataset.coins = String(view.coins);
     this.byId('bucket-label').textContent = `${Math.floor(view.bucket)}/${view.bucketMax}`;
     this.byId('bucket-bar').style.width = `${Math.min(100, (view.bucket / view.bucketMax) * 100)}%`;
@@ -73,7 +85,12 @@ export class Hud {
     this.paintShop(view);
     this.paintComplete(view);
     const toast = this.byId('toast');
-    toast.textContent = view.message;
+    const text = escapeHtml(view.message);
+    const toastHtml = view.messageOn && view.messageCoin ? `${coinMarkup(18)}${text}` : text;
+    if (toastHtml !== this.toastHtml) {
+      this.toastHtml = toastHtml;
+      toast.innerHTML = toastHtml;
+    }
     toast.classList.toggle('show', view.messageOn);
   }
 
@@ -92,10 +109,14 @@ export class Hud {
   }
 
   private paintShop(view: HudModel): void {
-    this.byId('shop-note').textContent = `На поле ${view.animalCount} из ${view.maxAnimals}. Монет: ${view.coins}.`;
+    const note = `На поле ${view.animalCount} из ${view.maxAnimals}. Монет: ${coinMarkup(16)} ${view.coins}.`;
+    if (note !== this.shopNoteHtml) {
+      this.shopNoteHtml = note;
+      this.byId('shop-note').innerHTML = note;
+    }
     const html = view.shop
       .map((offer) => {
-        const label = offer.reason ?? `${offer.price} монет`;
+        const reason = offer.reason ? ` aria-label="${escapeHtml(offer.reason)}, ${offer.price} монет"` : '';
         return `
           <article class="offer">
             <div class="offer-icon">${ICONS[offer.id]}</div>
@@ -103,7 +124,7 @@ export class Hud {
               <h3>${escapeHtml(offer.name)}</h3>
               <p>${escapeHtml(offer.blurb)}</p>
             </div>
-            <button type="button" data-buy="${offer.id}" ${offer.reason ? 'disabled' : ''}>${escapeHtml(label)}</button>
+            <button type="button" class="price" data-buy="${offer.id}" ${offer.reason ? 'disabled' : ''}${reason}>${coinMarkup(18)}<span>${offer.price}</span></button>
           </article>
         `;
       })
@@ -122,9 +143,11 @@ export class Hud {
     if (key === this.completeKey) return;
     this.completeKey = key;
     this.byId('complete-title').textContent = view.lastLevel ? 'Все уровни пройдены!' : 'Уровень пройден!';
-    this.byId('complete-text').textContent = view.lastLevel
-      ? `Цель «${view.goalText}» выполнена. Можно начать сначала: монеты и уровни сбросятся.`
-      : `Цель «${view.goalText}» выполнена. Монет на руках: ${view.coins}. Они перейдут на следующий уровень.`;
+    const goalName = escapeHtml(view.goalText);
+    const purse = `<span class="complete-coins">${coinMarkup(18)} ${view.coins}</span>`;
+    this.byId('complete-text').innerHTML = view.lastLevel
+      ? `Цель «${goalName}» выполнена. Можно начать сначала: монеты и уровни сбросятся. Сейчас ${purse}.`
+      : `Цель «${goalName}» выполнена. Монет на руках: ${purse}. Они перейдут на следующий уровень.`;
     this.byId('complete-next').textContent = view.lastLevel ? 'Играть сначала' : 'Следующий уровень';
     if (view.completed && wasHidden) this.byId('complete-next').focus();
   }

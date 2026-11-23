@@ -3,6 +3,9 @@ import type { Field } from './entities/Field';
 import { cellToPx, type Layout } from './layout';
 import type { Drop, Floater } from './types';
 
+const coinImage = new Image();
+coinImage.src = `${import.meta.env.BASE_URL}assets/coin.webp`;
+
 export interface RenderState {
   layout: Layout;
   field: Field;
@@ -392,13 +395,29 @@ function drawBubble(ctx: CanvasRenderingContext2D, x: number, y: number, text: s
 
 function drawFloater(ctx: CanvasRenderingContext2D, floater: Floater): void {
   const t = 1 - floater.life / floater.max;
+  const y = floater.y - t * 28;
   ctx.save();
   ctx.globalAlpha = Math.max(0, floater.life / floater.max);
   ctx.fillStyle = '#3b2614';
   ctx.font = '800 16px "Segoe UI", "Liberation Sans", "DejaVu Sans", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(floater.text, floater.x, floater.y - t * 28);
+  ctx.textBaseline = 'middle';
+  if (floater.coin && coinImage.complete && coinImage.naturalWidth > 0) {
+    const size = 22;
+    const textW = ctx.measureText(floater.text).width;
+    const left = floater.x - (size + 6 + textW) / 2;
+    ctx.drawImage(coinImage, left, y - size / 2, size, size);
+    ctx.textAlign = 'left';
+    ctx.fillText(floater.text, left + size + 6, y);
+  } else {
+    ctx.textAlign = 'center';
+    ctx.fillText(floater.text, floater.x, y);
+  }
   ctx.restore();
+}
+
+function drawCoinIcon(ctx: CanvasRenderingContext2D, x: number, y: number, size: number): void {
+  if (!coinImage.complete || coinImage.naturalWidth === 0) return;
+  ctx.drawImage(coinImage, x, y, size, size);
 }
 
 function drawTruck(ctx: CanvasRenderingContext2D, w: number, h: number, t: number): void {
@@ -416,6 +435,7 @@ function drawTruck(ctx: CanvasRenderingContext2D, w: number, h: number, t: numbe
   ctx.strokeStyle = '#3b2614';
   ctx.lineWidth = 2;
   ctx.stroke();
+  drawCoinIcon(ctx, 8, 6, 24);
   ctx.fillStyle = '#e07a3d';
   roundRect(ctx, 78, 10, 36, 26, 4);
   ctx.fill();
